@@ -1,17 +1,14 @@
 namespace FrontEnd.Data
 {
-    public class WeatherForecastClient
+    public class WeatherForecastClient(HttpClient httpClient, ILogger<WeatherForecastClient> logger)
     {
-        private HttpClient _httpClient;
-        private ILogger<WeatherForecastClient> _logger;
-
-        public WeatherForecastClient(HttpClient httpClient, ILogger<WeatherForecastClient> logger)
-        {
-            _httpClient = httpClient;
-            _logger = logger;
-        }
+        private readonly HttpClient _httpClient = httpClient;
+        private readonly ILogger<WeatherForecastClient> _logger = logger;
 
         public async Task<WeatherForecast[]> GetForecastAsync(DateTime? startDate)
-            => await _httpClient.GetFromJsonAsync<WeatherForecast[]>($"WeatherForecast?startDate={startDate}");
+        {
+            var result = await _httpClient.GetFromJsonAsync<WeatherForecast[]>($"WeatherForecast?startDate={startDate}");
+            return result ?? throw new Exception("Weather forecast data is null.");
+        }
     }
 }
