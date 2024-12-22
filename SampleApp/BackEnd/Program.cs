@@ -1,6 +1,13 @@
+using Microsoft.EntityFrameworkCore;
+using SampleApp.BackEnd.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("AzureSqlConnection")));
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -33,6 +40,12 @@ app.MapGet("/weatherforecast", () =>
 })
 .WithName("GetWeatherForecast")
 .WithOpenApi();
+
+app.MapGet("/database-version", (ApplicationDbContext db) =>
+{
+    var version = db.Database.GetDbConnection().ServerVersion;
+    return version;
+});
 
 app.Run();
 
